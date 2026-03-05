@@ -73,6 +73,10 @@ python scripts/query_weather.py --station Wqsps --days 5 --format json
 本项目使用 MIT 许可证，详见 [LICENSE](./LICENSE)。  
 This project is licensed under the MIT License. See [LICENSE](./LICENSE).
 
+## 使用手册 Manual
+
+- Skills 使用手册（Codex / OpenClaw）: [SKILLS_TUTORIAL.md](./SKILLS_TUTORIAL.md)
+
 ## 作者 Author
 
 - 作者 / Author: AI小新
