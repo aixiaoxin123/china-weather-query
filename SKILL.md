@@ -1,4 +1,4 @@
----
+﻿---
 name: china-weather-query
 description: Query and scrape China weather forecast information from the National Meteorological Center (NMC) APIs by city or station code. Use when a user asks for China weather, forecasts for a specific city/district, weather comparison across cities, or structured weather output (JSON/text) for downstream processing.
 ---

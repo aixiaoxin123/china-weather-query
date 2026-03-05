@@ -1,4 +1,4 @@
-# Skills 使用说明（Codex / OpenClaw）
+﻿# Skills 使用说明（Codex / OpenClaw）
 
 本文补充说明：如何从 Git 下载 Skills，并放到正确目录后使用。
 
@@ -90,6 +90,23 @@ OpenClaw 会从以下位置加载 Skills：
 
 修改 Skill 后建议重启会话，让扫描结果更新。
 
+### 4.1 Codex 注意点（安装位置）
+
+实践中最容易踩坑的是“目录放对了，但不是 Codex 实际扫描目录”。
+
+例如本项目中：
+
+- 工作区目录：`D:\github_dir\skills_dir\skills\china-weather-query`
+- Codex 扫描目录：`C:\Users\Administrator\.codex\skills`
+
+如果 Skill 只放在工作区目录，而当前 Codex 会话只扫描 `C:\Users\Administrator\.codex\skills`，就会表现为“Skill 没安装成功 / 不可用”。
+
+建议做法：
+
+1. 将 skill 复制到 `C:\Users\Administrator\.codex\skills\china-weather-query`
+2. 确认目录层级是 `.../skills/<skill-name>/SKILL.md`
+3. 重启 Codex 会话，让 Skills 重新索引
+
 ## 5. 本项目使用示例
 
 ```bash
@@ -114,4 +131,3 @@ python scripts/query_weather.py --station Wqsps --days 5 --format json
 
 - 确认改的是“实际加载目录”里的文件
 - 本项目可清理缓存后重试：`scripts/.station_cache.json`
-
