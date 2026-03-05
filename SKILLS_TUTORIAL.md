@@ -1,75 +1,96 @@
-# Skills 插件使用教程（Codex）
+# Skills 使用说明（Codex / OpenClaw）
 
-这份教程说明：
-- 如何从 Git 拉取一个 Skill
-- 拉取后应该放到哪里
-- 如何触发、加载、调试 Skill
+本文补充说明：如何从 Git 下载 Skills，并放到正确目录后使用。
 
-## 1. Skill 是什么
+## 1. Skill 基本结构
 
-一个 Skill 本质是一个目录，最少包含 `SKILL.md`。  
-Codex 通过 `SKILL.md` 里的 `name` 和 `description` 判断是否触发该技能。
-
-典型目录：
+一个 Skill 是一个目录，至少包含 `SKILL.md`（带 YAML frontmatter）。
 
 ```text
 your-skill/
 ├─ SKILL.md
-├─ agents/openai.yaml      (可选，推荐)
+├─ agents/openai.yaml      (可选)
 ├─ scripts/                (可选)
 ├─ references/             (可选)
 └─ assets/                 (可选)
 ```
 
-## 2. 从 Git 拉取后放到哪里
-
-推荐放到 Codex 的技能目录：`$HOME/.codex/skills/<skill-name>`  
-Windows 常见路径：`C:\Users\<你的用户名>\.codex\skills\<skill-name>`
-
-### 步骤 A：先从 Git 拉取
+## 2. 从 Git 下载 Skill
 
 ```powershell
 cd D:\github_dir
 git clone https://github.com/aixiaoxin123/china-weather-query.git
 ```
 
-拉取后目录一般是：
+下载后目录示例：
 
 `D:\github_dir\china-weather-query`
 
-### 步骤 B：复制到 Codex skills 目录
+## 3. OpenClaw 中如何使用
+
+OpenClaw 使用兼容 AgentSkills 的 `skills` 文件夹来教智能体如何使用工具。  
+每个 Skill 都是一个带 `SKILL.md` 的目录。
+
+### 3.1 直接放入工作区（最简单）
+
+把仓库目录放入工作区的 `skills` 下即可使用：
+
+`<workspace>/skills/china-weather-query`
+
+示例（PowerShell）：
 
 ```powershell
 Copy-Item -Recurse -Force `
   "D:\github_dir\china-weather-query" `
-  "$HOME\.codex\skills\china-weather-query"
+  "D:\your_workspace\skills\china-weather-query"
 ```
 
-### 步骤 C：重启 Codex 会话
+### 3.2 OpenClaw Skills 加载位置
 
-重启后，Codex 会重新扫描技能目录并加载新 Skill。
+OpenClaw 会从以下位置加载 Skills：
 
-## 3. 另一种放置方式（工作区模式）
+1. 内置 Skills（安装包自带）
+2. 托管/本地 Skills：`~/.openclaw/skills`
+3. 工作区 Skills：`<workspace>/skills`
 
-如果你的环境本身已经把当前项目的 `skills/` 目录作为技能来源，  
-也可以直接放在：
+### 3.3 名称冲突优先级
+
+如果 Skill 名称冲突，优先级为：
+
+`<workspace>/skills`（最高）  
+→ `~/.openclaw/skills`  
+→ 内置 Skills（最低）
+
+另外，你可以在 `~/.openclaw/openclaw.json` 中通过  
+`skills.load.extraDirs` 配置额外 Skills 目录（最低优先级）。
+
+示例：
+
+```json
+{
+  "skills": {
+    "load": {
+      "extraDirs": [
+        "D:/shared/openclaw-skills"
+      ]
+    }
+  }
+}
+```
+
+## 4. Codex 中如何使用（补充）
+
+如果你在 Codex 环境，常见放置目录是：
+
+`$HOME/.codex/skills/<skill-name>`
+
+或当前工作区：
 
 `<workspace>/skills/<skill-name>`
 
-例如你当前项目中：
+修改 Skill 后建议重启会话，让扫描结果更新。
 
-`D:\github_dir\skills_dir\skills\china-weather-query`
-
-这种模式下，修改 `SKILL.md` 后同样建议重启会话。
-
-## 4. 如何触发 Skill
-
-有两种常见方式：
-
-1. 显式触发：在对话中写技能名，如 `$china-weather-query`
-2. 语义触发：请求内容匹配 `description`，如“查南京今天和一周天气”
-
-## 5. 本项目的使用示例
+## 5. 本项目使用示例
 
 ```bash
 python scripts/query_weather.py --city 南京 --days 7
@@ -79,20 +100,18 @@ python scripts/query_weather.py --station Wqsps --days 5 --format json
 
 ## 6. 常见问题
 
-### Q1: 技能没生效
+### Q1: 放进去后没生效
 
-- 检查目录是否放在正确位置：
-  - `$HOME/.codex/skills/<skill-name>` 或工作区 `skills/<skill-name>`
+- 检查目录层级是否正确（必须是 `.../skills/<skill-name>/SKILL.md`）
 - 检查 `SKILL.md` frontmatter 是否有效（`name`、`description`）
-- 重启 Codex 会话
+- 重启 OpenClaw/Codex 会话
 
-### Q2: 拉取后不知道放哪
+### Q2: 多个同名 Skill 不知道用了哪个
 
-按第 2 节执行即可。  
-核心原则：Skill 文件夹最终要位于“Codex 扫描的技能根目录”下面。
+按优先级判断：工作区 > 用户目录 > 内置。
 
-### Q3: 改了脚本但结果不变
+### Q3: 改了脚本但结果没变
 
-- 确认改的是“已加载路径”里的文件，不是其他副本
-- 本项目可删除缓存后重试：`scripts/.station_cache.json`
+- 确认改的是“实际加载目录”里的文件
+- 本项目可清理缓存后重试：`scripts/.station_cache.json`
 
