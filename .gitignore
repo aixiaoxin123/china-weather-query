@@ -1,0 +1,11 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Local runtime cache
+scripts/.station_cache.json
+
+# IDE / OS
+.DS_Store
+Thumbs.db
+

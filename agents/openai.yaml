@@ -1,0 +1,4 @@
+interface:
+  display_name: "China Weather Query"
+  short_description: "Query China city weather forecasts from NMC"
+  default_prompt: "查询中国城市天气预报，并返回结构化结果。"
